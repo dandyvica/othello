@@ -14,6 +14,19 @@ pub struct Board {
 
 impl Board {
     /// A new empty board having `board_dimension` size
+    ///
+    /// # Examples
+    /// ```
+    /// use othlib::board::Board;
+    ///
+    /// let mut board = Board::new(8);
+    /// assert_eq!(board.free_squares().len(), 8*8);
+    /// ```    
+    /// ```should_panic
+    /// use othlib::board::Board;
+    ///
+    /// let mut board = Board::new(9);
+    /// ```   
     pub fn new(board_dimension: usize) -> Board {
         // volontarly exclude odd dimensions
         if board_dimension % 2 != 0 {
@@ -27,6 +40,15 @@ impl Board {
     }
 
     /// Initialize to the Othello start position
+    ///
+    /// # Examples
+    /// ```
+    /// use othlib::board::Board;
+    ///
+    /// let mut board = Board::new(8);
+    /// board.init();
+    /// assert_eq!(board.free_squares().len(), 8*8-4);
+    /// ```    
     pub fn init(&mut self) {
         // initialize game position to start
         let center = self.dimension / 2;
@@ -188,6 +210,23 @@ impl Board {
         }
 
         v
+    }
+
+    /// Count the number of discs from a colour
+    ///
+    /// # Examples
+    /// ```
+    /// use othlib::piece::Piece;
+    /// use othlib::square::Square;
+    /// use othlib::board::Board;
+    ///
+    /// let mut board = Board::new(8);
+    /// board.init();
+    /// assert_eq!(board.value(Piece::Black), 2);
+    ///
+    /// ```
+    pub fn value(&self, p: Piece) -> usize {
+        self.squares.iter().filter(|v| **v == Square::Occupied(p)).count()
     }
 }
 
