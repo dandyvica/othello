@@ -1,0 +1,15 @@
+[package]
+name = "othello_game"
+version = "0.1.0"
+authors = ["dandyvica <dandyvica@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+
+[lib]
+name = "othlib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "othello"
+path = "src/main.rs"
