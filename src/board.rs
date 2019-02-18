@@ -2,14 +2,14 @@ use std::fmt;
 
 use crate::coordinate::Coordinate;
 use crate::piece::Piece;
-use crate::square::Square;
+use crate::square::{Square, Status};
 
 //const BOARD_SIZE: usize = 8 * 8;
 pub const OTHELLO_BOARD_DIMENSION: usize = 8;
 
 pub struct Board {
-    dimension: usize,
-    squares: Vec<Square>,
+    pub dimension: usize,
+    pub squares: Vec<Square>,
 }
 
 impl Board {
@@ -20,7 +20,8 @@ impl Board {
     /// use othlib::board::Board;
     ///
     /// let mut board = Board::new(8);
-    /// assert_eq!(board.free_squares().len(), 8*8);
+    /// assert_eq!(board.dimension, 8);
+    /// assert_eq!(board.squares.len(), 8*8);
     /// ```    
     /// ```should_panic
     /// use othlib::board::Board;
@@ -33,9 +34,23 @@ impl Board {
             panic!("Only even board dimensions are possible!");
         }
 
+        // total number of elements = number of squares in the board
+        let n = board_dimension * board_dimension;
+
+        // set Vec dimension now
+        let mut v = Vec::with_capacity(n);
+
+        // create squares of the board
+        for i in 0..n {
+            v.push(Square {
+                status: Status::Empty,
+                coord: Coordinate::to_coordinate(i, board_dimension),
+            })
+        }
+
         Board {
             dimension: board_dimension,
-            squares: vec![Square::Empty; board_dimension * board_dimension],
+            squares: v,
         }
     }
 
@@ -53,14 +68,10 @@ impl Board {
         // initialize game position to start
         let center = self.dimension / 2;
 
-        self.squares[Coordinate::to_index(center - 1, center - 1, self.dimension)] =
-            Square::Occupied(Piece::White);
-        self.squares[Coordinate::to_index(center, center, self.dimension)] =
-            Square::Occupied(Piece::White);
-        self.squares[Coordinate::to_index(center - 1, center, self.dimension)] =
-            Square::Occupied(Piece::Black);
-        self.squares[Coordinate::to_index(center, center - 1, self.dimension)] =
-            Square::Occupied(Piece::Black);
+        self.set_piece((center - 1, center - 1), Piece::White);
+        self.set_piece((center, center), Piece::White);
+        self.set_piece((center - 1, center), Piece::Black);
+        self.set_piece((center, center - 1), Piece::Black);
     }
 
     ///  Get the piece at (x,y)
@@ -68,18 +79,23 @@ impl Board {
     /// # Examples
     /// ```
     /// use othlib::piece::Piece;
-    /// use othlib::square::Square;
+    /// use othlib::square::{Status,Square};
     /// use othlib::board::Board;
     ///
     /// let mut board = Board::new(8);
     /// board.init();
-    /// assert_eq!(board.get_piece(3,3).unwrap(), &Square::Occupied(Piece::White));
-    /// assert_eq!(board.get_piece(3,4).unwrap(), &Square::Occupied(Piece::Black));
-    /// assert_eq!(board.get_piece(0,0).unwrap(), &Square::Empty);
+    /// assert_eq!(board.get_piece((3,3)).unwrap().status, Status::Occupied(Piece::White));
+    /// assert_eq!(board.get_piece((3,4)).unwrap().status, Status::Occupied(Piece::Black));
+    /// assert_eq!(board.get_piece((0,0)).unwrap().status, Status::Empty);
     ///
     /// ```
-    pub fn get_piece(&self, x: usize, y: usize) -> Option<&Square> {
-        self.squares.get(Coordinate::to_index(x, y, self.dimension))
+    pub fn get_piece<T: Into<Coordinate>>(&self, value: T) -> Option<&Square> {
+        // convert value
+        let coord = value.into();
+        self.squares.get(coord.to_index(self.dimension))
+    }
+    pub fn at(&self, coord: &Coordinate) -> Option<&Square> {
+        self.squares.get(coord.to_index(self.dimension))
     }
 
     ///  Set the piece at (x,y) without verifying if the move is allowed
@@ -92,18 +108,18 @@ impl Board {
     ///
     /// let mut board = Board::new(8);
     /// board.init();
-    /// board.set_piece(0,0,Piece::Black);
+    /// board.set_piece((0,0),Piece::Black);
     ///
     /// assert_eq!(board.free_squares().len(), 8*8-5);
     ///
     /// ```
-    pub fn set_piece(&mut self, x: usize, y: usize, p: Piece) {
-        match self
-            .squares
-            .get_mut(Coordinate::to_index(x, y, self.dimension))
-        {
-            Some(v) => *v = Square::Occupied(p),
-            None => panic!("({},{}) cordinates are out of the board"),
+    pub fn set_piece<T: Into<Coordinate>>(&mut self, value: T, p: Piece) {
+        // convert value
+        let coord: Coordinate = value.into();
+
+        match self.squares.get_mut(coord.to_index(self.dimension)) {
+            Some(v) => v.status = Status::Occupied(p),
+            None => panic!("({},{}) cordinates are out of the board", coord.x, coord.y),
         }
     }
 
@@ -120,16 +136,8 @@ impl Board {
     /// assert_eq!(board.free_squares().len(), 8*8-4);
     ///
     /// ```
-    pub fn free_squares(&self) -> Vec<Coordinate> {
-        let mut v = Vec::new();
-
-        for (i, sq) in self.squares.iter().enumerate() {
-            if sq == &Square::Empty {
-                v.push(Coordinate::to_coordinate(i, self.dimension));
-            }
-        }
-
-        v
+    pub fn free_squares(&self) -> Vec<&Square> {
+        self.filter(|sq| sq.status == Status::Empty)
     }
 
     /// Get all coordinates for occupied squares for a player
@@ -145,16 +153,8 @@ impl Board {
     /// assert_eq!(board.free_squares().len(), 8*8-4);
     ///
     /// ```
-    pub fn occupied_squares(&self, p: Piece) -> Vec<Coordinate> {
-        let mut v = Vec::new();
-
-        for (i, sq) in self.squares.iter().enumerate() {
-            if sq != &Square::Occupied(p) {
-                v.push(Coordinate::to_coordinate(i, self.dimension));
-            }
-        }
-
-        v
+    pub fn occupied_squares(&self, p: Piece) -> Vec<&Square> {
+        self.filter(|sq| sq.status != Status::Empty)
     }
 
     /// Load a board from a string
@@ -189,8 +189,8 @@ impl Board {
         for (y, row) in data.lines().enumerate() {
             for (x, c) in row.trim().chars().enumerate() {
                 match c {
-                    'B' => board.set_piece(x, y, Piece::Black),
-                    'W' => board.set_piece(x, y, Piece::White),
+                    'B' => board.set_piece((x, y), Piece::Black),
+                    'W' => board.set_piece((x, y), Piece::White),
                     '-' => (),
                     _ => panic!("Not a valid piece !"),
                 }
@@ -200,12 +200,20 @@ impl Board {
         board
     }
 
+    // pub is_move_valid(&self, coord: &Coordinate, piece: Piece) -> bool {
+    //     if !self.at(coord).is_free() {
+    //         panic!("{} is not free!", coord);
+    //     }
+    // }
+
     pub fn allowed_moves(&self, player: Piece) -> Vec<Coordinate> {
         let mut v = Vec::new();
 
-        for free_sq in &self.free_squares() {
-            for adjacent_sq in free_sq.adjacent(self.dimension) {
-                v.push(adjacent_sq);
+        for sq in self.occupied_squares(player) {
+            for coord in sq.coord.adjacent(self.dimension) {
+                if self.at(&coord).unwrap().is_free() {
+                    v.push(coord);
+                }
             }
         }
 
@@ -226,7 +234,16 @@ impl Board {
     ///
     /// ```
     pub fn value(&self, p: Piece) -> usize {
-        self.squares.iter().filter(|v| **v == Square::Occupied(p)).count()
+        self.filter(|sq| sq.status == Status::Occupied(p)).len()
+    }
+
+    /// Filter squares according to predicate
+    fn filter<F>(&self, pred: F) -> Vec<&Square>
+    where
+        F: Fn(&Square) -> bool,
+    {
+        let v: Vec<_> = self.squares.iter().filter(|e| pred(e)).collect();
+        v
     }
 }
 
@@ -237,7 +254,7 @@ impl fmt::Display for Board {
 
         for y in 0..self.dimension {
             for x in 0..self.dimension {
-                s += &format!("{}", self.get_piece(x, y).unwrap());
+                s += &format!("{}", self.get_piece((x, y)).unwrap());
             }
             s += &format!("\n");
         }
