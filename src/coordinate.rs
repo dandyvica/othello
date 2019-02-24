@@ -55,6 +55,11 @@ impl Coordinate {
         }
     }
 
+    #[inline(always)]
+    pub fn to_bitboard_coordinate(index: usize) -> (usize, usize) {
+        ((63 - index) % 8, (63 - index) / 8)
+    }
+
     /// Convert coordinate to algebric notation
     ///
     /// # Examples

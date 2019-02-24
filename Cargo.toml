@@ -6,11 +6,12 @@ edition = "2018"
 
 [dependencies]
 unic-char-range = "0.8.0"
+lazy_static = "1.2.0"
 
 [lib]
 name = "othlib"
 path = "src/lib.rs"
 
 [[bin]]
-name = "othello"
-path = "src/main.rs"
+name = "othello_svg"
+path = "src/othello_svg.rs"
