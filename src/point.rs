@@ -1,7 +1,4 @@
-static ASCII_UPPER: [char; 26] = [
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
-    'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-];
+static ASCII_UPPER: [char; 8] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Point {}
@@ -73,5 +70,26 @@ impl Point {
     #[inline(always)]
     pub fn to_algebric(pt: (usize, usize)) -> String {
         format!("{}{}", ASCII_UPPER[pt.0], pt.1 + 1)
+    }
+
+    /// Convert coordinate from algebric notation
+    ///
+    /// # Examples
+    /// ```
+    /// use othlib::point::Point;
+    ///
+    /// assert_eq!(Point::from_algebric("A1"), (0,0));
+    /// assert_eq!(Point::from_algebric("D4"), (3,3));
+    /// assert_eq!(Point::from_algebric("H8"), (7,7));
+    /// ```    
+    #[inline(always)]
+    pub fn from_algebric(algebric_coord: &str) -> (usize, usize) {
+        let x = ASCII_UPPER
+            .iter()
+            .position(|&e| e == algebric_coord.chars().next().unwrap())
+            .unwrap();
+        let y = algebric_coord.chars().nth(1).unwrap().to_digit(10).unwrap() as usize;
+
+        (x, y - 1)
     }
 }

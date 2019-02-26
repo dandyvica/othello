@@ -6,7 +6,6 @@ edition = "2018"
 
 [dependencies]
 unic-char-range = "0.8.0"
-lazy_static = "1.2.0"
 
 [lib]
 name = "othlib"
