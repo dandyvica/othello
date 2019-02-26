@@ -9,5 +9,4 @@ pub mod direction;
 pub mod point;
 pub mod square;
 pub mod svg;
-pub mod svg_board;
 pub mod util;

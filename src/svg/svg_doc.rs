@@ -1,8 +1,8 @@
 // A very simple struct with static methods to create simple SVG tags used in Othello board
 
-pub struct SVG {}
+pub struct SVGDoc {}
 
-impl SVG {
+impl SVGDoc {
     pub fn new_document(view_box: &str, width: f32, height: f32) -> String {
         format!(r#"<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="{}" width="{}" height="{}">"#, view_box, width, height)
     }
