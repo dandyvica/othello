@@ -1,17 +1,17 @@
 static ASCII_UPPER: [char; 8] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct Point {}
+pub struct Coordinate {}
 
-impl Point {
+impl Coordinate {
     /// Useful conversion function to map (x,y) coordonate to linear index
     ///
     /// # Examples
     /// ```
-    /// use othlib::point::Point;
+    /// use othlib::board::coordinate::Coordinate;
     ///
-    /// assert_eq!(Point::to_index((0,0)), 0);
-    /// assert_eq!(Point::to_index((7,7)), 63);
+    /// assert_eq!(Coordinate::to_index((0,0)), 0);
+    /// assert_eq!(Coordinate::to_index((7,7)), 63);
     ///
     /// ```      
     #[inline(always)]
@@ -23,10 +23,10 @@ impl Point {
     ///
     /// # Examples
     /// ```
-    /// use othlib::point::Point;
+    /// use othlib::board::coordinate::Coordinate;
     ///
-    /// assert_eq!(Point::to_coordinate(0), (0,0));
-    /// assert_eq!(Point::to_coordinate(63), (7,7));
+    /// assert_eq!(Coordinate::to_coordinate(0), (0,0));
+    /// assert_eq!(Coordinate::to_coordinate(63), (7,7));
     ///
     /// ```       
     #[inline(always)]
@@ -38,16 +38,16 @@ impl Point {
     ///
     /// # Examples
     /// ```
-    /// use othlib::point::Point;
+    /// use othlib::board::coordinate::Coordinate;
     ///
-    /// assert_eq!(Point::to_bitboard_coordinate(63), (0,0));
-    /// assert_eq!(Point::to_bitboard_coordinate(0), (7,7));
+    /// assert_eq!(Coordinate::to_bitboard_coordinate(63), (0,0));
+    /// assert_eq!(Coordinate::to_bitboard_coordinate(0), (7,7));
     ///
     /// ```  
     /// ```should_panic
-    /// use othlib::point::Point;
+    /// use othlib::board::coordinate::Coordinate;
     ///
-    /// assert_eq!(Point::to_bitboard_coordinate(64), (0,0));
+    /// assert_eq!(Coordinate::to_bitboard_coordinate(64), (0,0));
     ///
     /// ```
     #[inline(always)]
@@ -55,17 +55,17 @@ impl Point {
         if index > 63 {
             panic!("Index {} can't be greater than 63 !", index);
         }
-        Point::to_coordinate(63 - index)
+        Coordinate::to_coordinate(63 - index)
     }
 
     /// Convert coordinate to algebric notation
     ///
     /// # Examples
     /// ```
-    /// use othlib::point::Point;
+    /// use othlib::board::coordinate::Coordinate;
     ///
-    /// assert_eq!(Point::to_algebric((0,0)), "A1");
-    /// assert_eq!(Point::to_algebric((7,7)), "H8");
+    /// assert_eq!(Coordinate::to_algebric((0,0)), "A1");
+    /// assert_eq!(Coordinate::to_algebric((7,7)), "H8");
     /// ```    
     #[inline(always)]
     pub fn to_algebric(pt: (usize, usize)) -> String {
@@ -76,11 +76,11 @@ impl Point {
     ///
     /// # Examples
     /// ```
-    /// use othlib::point::Point;
+    /// use othlib::board::coordinate::Coordinate;
     ///
-    /// assert_eq!(Point::from_algebric("A1"), (0,0));
-    /// assert_eq!(Point::from_algebric("D4"), (3,3));
-    /// assert_eq!(Point::from_algebric("H8"), (7,7));
+    /// assert_eq!(Coordinate::from_algebric("A1"), (0,0));
+    /// assert_eq!(Coordinate::from_algebric("D4"), (3,3));
+    /// assert_eq!(Coordinate::from_algebric("H8"), (7,7));
     /// ```    
     #[inline(always)]
     pub fn from_algebric(algebric_coord: &str) -> (usize, usize) {

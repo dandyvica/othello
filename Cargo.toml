@@ -12,5 +12,5 @@ name = "othlib"
 path = "src/lib.rs"
 
 [[bin]]
-name = "othello_svg"
-path = "src/othello_svg.rs"
+name = "othello2svg"
+path = "src/util/othello2svg.rs"

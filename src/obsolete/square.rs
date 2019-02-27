@@ -1,7 +1,7 @@
 use std::fmt;
 
-use crate::color::Color;
-use crate::coordinate::Coordinate;
+use crate::board::color::Color;
+use crate::board::coordinate::Coordinate;
 
 #[derive(Debug, Clone, PartialEq)]
 // A square is either free, or occupied by a black or white piece

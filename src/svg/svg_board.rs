@@ -1,7 +1,8 @@
-use crate::color::Color;
-use crate::coordinate::Coordinate;
-use crate::point::Point;
+use crate::board::color::Color;
+use crate::board::coordinate::Coordinate;
+//use crate::board::point::Point;
 use crate::svg::svg_doc::SVGDoc;
+use crate::svg::vecint64::VecInt64;
 
 pub struct SVGBoard {
     svg_tags: String,
@@ -134,54 +135,21 @@ impl SVGBoard {
     }
 
     /// Draw black or white piece using a bitboard (u64 int) to illustrate the bit shifting
-    pub fn draw_pieces_from_shifted_u64(&mut self, pieces: u64, color: Color, start_bit: usize) {
-        // get color
-        let svg_color = match color {
-            Color::Black => "black",
-            Color::White => "white",
-        };
-
-        // convert binary digit to string
-        let bits = format!("{:#066b}", pieces);
-
-        // we need to start from 63 whenever we find the first bit set to 1
-        // let mut most_significant = usize::max_value();
-        let mut bit = start_bit;
-
-        // loop through bits and draw a circle whose color is the one of the `color` argument
-        for (i, c) in bits.chars().skip(2).enumerate() {
-            // decrement if possible
-            if bit >= 1 {
-                bit -= 1 as usize;
-            }
-
-            // if bit is '1', draw a circle
-            if c == '1' {
-                // // we countdown from 64 if this is the first time we find a 1
-                // if first_time == true {
-                //     // now we found the most significant bit
-                //     most_significant = 63;
-                //     first_time = false;
-                // }
-
+    pub fn draw_pieces_from_vecint64(&mut self, indexes: &mut VecInt64) {
+        println!("{:?}", indexes);
+        // loop through indexes and draw its number
+        for (i,v) in indexes.v64.iter().enumerate() {
+            // found a non-zero index: draw the text
+            if *v != -1 {
                 // calculate coordinates
-                let coord = Coordinate::to_bitboard_coordinate(63 - i);
-
-                let style = format!("fill:{}", svg_color);
-
-                // draw piece as a circle
-                self.svg_tags += &SVGDoc::circle(
-                    ((coord.0 as f32) + 1.5f32, (coord.1 as f32) + 1.5f32),
-                    0.4f32,
-                    &style,
-                );
+                let coord = Coordinate::to_coordinate(i);
 
                 // but add it's bit significant
                 self.svg_tags += &SVGDoc::text_with_anchor(
                     ((coord.0 as f32) + 1.5f32, (coord.1 as f32) + 1.6f32),
                     "middle",
                     "font-family:Verdana;font-size:0.3px;fill:black",
-                    &bit.to_string(),
+                    &v.to_string(),
                 );
             }
         }
@@ -205,7 +173,7 @@ impl SVGBoard {
 
     /// Draw black or white piece using algebric coordinates
     pub fn draw_piece_from_algebric(&mut self, algebric_coord: &str, color: Color) {
-        let xy_coord = Point::from_algebric(algebric_coord);
+        let xy_coord = Coordinate::from_algebric(algebric_coord);
         self.draw_piece_from_xy(xy_coord, color);
     }
 
@@ -217,38 +185,3 @@ impl SVGBoard {
     }
 }
 
-// /// Create a SVG board for a single u64 value
-// impl From<(u64, Color)> for SVGBoard {
-//     fn from(args: (u64, Color)) -> Self {
-//         // create new board
-//         let mut svg = SVGBoard::new();
-
-//         // get color
-//         let svg_color = match args.1 {
-//             Color::Black => "black",
-//             Color::White => "white",
-//         };
-
-//         // convert binary digit to string
-//         let bits = format!("{:#066b}", args.0);
-
-//         // loop through bits and draw a circle whose color is the one of the `color` argument
-//         for (i, c) in bits.chars().skip(2).enumerate() {
-//             // if bit is '1', draw a circle
-//             if c == '1' {
-//                 // calculate coordinates
-//                 let coord = Coordinate::to_bitboard_coordinate(63 - i);
-
-//                 // draw circle with valid color
-//                 svg.svg_tags += &format!(
-//                     r#"<circle cx="{}" cy="{}" r="0.4" fill="{}" />"#,
-//                     (coord.0 as f64) + 1.5,
-//                     (coord.1 as f64) + 1.5,
-//                     svg_color
-//                 );
-//             }
-//         }
-
-//         svg
-//     }
-// }

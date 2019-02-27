@@ -1,8 +1,8 @@
-pub trait Colorable {
+pub trait FromVec {
     fn from_vec(indexes: Vec<usize>) -> Self;
 }
 
-impl Colorable for u64 {
+impl FromVec for u64 {
     /// Useful conversion function from a vec of indexes to a 64-bit integer.
     ///
     /// # Argument
@@ -11,7 +11,7 @@ impl Colorable for u64 {
     ///
     /// # Examples
     /// ```
-    /// use othlib::util::Colorable;
+    /// use othlib::util::from_vec::FromVec;
     ///
     /// let v: Vec<_> = (0..=63).map(|i| i).collect();
     ///

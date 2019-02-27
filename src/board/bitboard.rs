@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use crate::color::Color;
-use crate::direction::{Direction, DIRECTIONS};
+use crate::board::color::Color;
+use crate::board::direction::{Direction, DIRECTIONS};
 
 pub struct BitBoard {
     board: HashMap<Color, u64>,
@@ -27,7 +27,7 @@ impl BitBoard {
     ///
     /// # Examples
     /// ```
-    /// use othlib::bitboard::BitBoard;
+    /// use othlib::board::bitboard::BitBoard;
     ///
     /// let mut board = BitBoard::new();
     /// assert_eq!(board.nb_empty(), 8*8-4);
@@ -40,7 +40,7 @@ impl BitBoard {
     ///
     /// # Examples
     /// ```
-    /// use othlib::bitboard::BitBoard;
+    /// use othlib::board::bitboard::BitBoard;
     ///
     /// let mut board = BitBoard::new();
     /// assert_eq!(board.nb_occupied(), 4);
@@ -60,12 +60,10 @@ impl BitBoard {
     }
 
     /// Shift player pieces into one of the 8 possible directions
-    ///
-    /// # Examples
-    /// ```
-    /// use othlib::bitboard::BitBoard;
-    /// use othlib::util::Colorable;
-    /// use othlib::direction::Direction;
+    /// 
+    /// Examples
+    /// 
+    /// use othlib::util::from_vec::FromVec;    
     ///
     /// let full = u64::max_value();
     ///
@@ -95,14 +93,14 @@ impl BitBoard {
     /// ```
     pub fn shift_one_direction(dir: &Direction, value: u64) -> u64 {
         match dir {
-            Direction::Right => (value >> 1) & 0x7F7F7F7F7F7F7F7Fu64,
-            Direction::DownRight => (value >> 9) & 0x007F7F7F7F7F7F7Fu64,
-            Direction::Down => (value >> 8) & 0xFFFFFFFFFFFFFFFFu64,
-            Direction::DownLeft => (value >> 7) & 0x00FEFEFEFEFEFEFEu64,
-            Direction::Left => (value << 1) & 0xFEFEFEFEFEFEFEFEu64,
-            Direction::UpLeft => (value << 9) & 0xFEFEFEFEFEFEFE00u64,
-            Direction::Up => (value << 8) & 0xFFFFFFFFFFFFFFFFu64,
-            Direction::UpRight => (value << 7) & 0x7F7F7F7F7F7F7F00u64,
+            Direction::E => (value >> 1) & 0x7F7F7F7F7F7F7F7Fu64,
+            Direction::SE => (value >> 9) & 0x007F7F7F7F7F7F7Fu64,
+            Direction::S => (value >> 8) & 0xFFFFFFFFFFFFFFFFu64,
+            Direction::SW => (value >> 7) & 0x00FEFEFEFEFEFEFEu64,
+            Direction::W => (value << 1) & 0xFEFEFEFEFEFEFEFEu64,
+            Direction::NW => (value << 9) & 0xFEFEFEFEFEFEFE00u64,
+            Direction::N => (value << 8) & 0xFFFFFFFFFFFFFFFFu64,
+            Direction::NE => (value << 7) & 0x7F7F7F7F7F7F7F00u64,
         }
     }
 

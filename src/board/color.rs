@@ -8,7 +8,7 @@ pub enum Color {
 ///
 /// # Examples
 /// ```
-/// use othlib::color::Color;
+/// use othlib::board::color::Color;
 ///
 /// let p = Color::White;
 /// assert_eq!(p.flip(), Color::Black);

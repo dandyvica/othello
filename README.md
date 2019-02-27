@@ -66,35 +66,92 @@ svg.close();
 svg.write("full_board.svg");
 ```
 
-![Othello board with no pieces](./doc/full_board.png)
+![](./doc/images/full_board.png)
 
-### Moving down
-Just shift to the left 8 times with:
+### Moving South
+Just shift to the right 8 times with:
 
 ```rust
-let mut svg = SVGBoard::new();
-// use the shifted method to keep track of the number of the piece moved
-svg.draw_pieces_from_shifted_u64(u64::max_value() >> 8, Color::White);
-svg.draw_legend("Down");
+// create brand new empty board
+let mut svg = SVGBoard::new();    
+
+// draw pieces depending on set bits in the u64 value
+svg.draw_pieces_from_u64(u64::max_value() >> 8, Color::White);
+
+// trick to keep track of the piece number
+let mut v = VecInt64::new();
+svg.draw_pieces_from_vecint64(v.rshift(8));
+
+// add identification
+svg.draw_legend("Moving South");
+
+// write out file
 svg.close();
-svg.write("full_board_down.svg");
+svg.write(svg_file);
 ```
 
-![Othello board with no pieces](./doc/full_board_down.png)
+![](./doc/images/full_board_south.png)
 
-### Moving up
-Just shift to the right 8 times with:
+### Moving North
+Just shift to the left 8 times with:
 
 ```rust
 u64::max_value() << 8
 ```
 
-![Othello board with no pieces](./doc/full_board_up.png)
+![](./doc/images/full_board_north.png)
 
-### Moving left
-To move left, mask with pattern **0b01111111** repeated 8 times:
+### Moving East
+Shift right once and mask with pattern **0b01111111** repeated 8 times:
 
 ```rust
-// btw 0b0111111101111111011111110111111101111111011111110111111101111111 == 9187201950435738000
-u64::max_value() & 0b0111111101111111011111110111111101111111011111110111111101111111
+(u64::max_value() >> 1) & 0b01111111_01111111_01111111_01111111_01111111_01111111_01111111_01111111
 ```
+
+![](./doc/images/full_board_east.png)
+
+
+### Moving West
+Shift left and mask with pattern **0b11111110** repeated 8 times:
+
+```rust
+(u64::max_value() << 1) & 0b11111110_11111110_11111110_11111110_11111110_11111110_11111110_11111110
+```
+
+![](./doc/images/full_board_west.png)
+
+### Moving South-East
+Shift right 9 times and mask to get rid of first row and first column:
+
+```rust
+(u64::max_value() >> 9) & 0b00000000_01111111_01111111_01111111_01111111_01111111_01111111_01111111
+```
+
+![](./doc/images/full_board_south_east.png)
+
+### Moving South-West
+Shift right 7 times and mask to get rid of last column:
+
+```rust
+(u64::max_value() >> 7) & 0b00000000_11111110_11111110_11111110_11111110_11111110_11111110_11111110
+```
+
+![](./doc/images/full_board_south_west.png)
+
+### Moving North-West
+Shift left 9 times and mask to get rid of last column:
+
+```rust
+(u64::max_value() << 9) & 0b11111110_11111110_11111110_11111110_11111110_11111110_11111110_11111110
+```
+
+![](./doc/images/full_board_north_west.png)
+
+### Moving North-East
+Shift left 7 times and mask to get rid of the first column:
+
+```rust
+(u64::max_value() << 7) & 0b01111111_01111111_01111111_01111111_01111111_01111111_01111111_01111111
+```
+
+![](./doc/images/full_board_north_east.png)
