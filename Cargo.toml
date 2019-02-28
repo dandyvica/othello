@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 unic-char-range = "0.8.0"
+byteorder = "1.3.1"
 
 [lib]
 name = "othlib"
@@ -14,3 +15,7 @@ path = "src/lib.rs"
 [[bin]]
 name = "othello2svg"
 path = "src/util/othello2svg.rs"
+
+[[bin]]
+name = "read_wthor"
+path = "src/util/read_wthor.rs"

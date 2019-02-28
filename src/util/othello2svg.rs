@@ -16,8 +16,8 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() != 2 {
-            println!("othello2svg <svg_file>");
-            ::std::process::exit(1);
+        println!("othello2svg <svg_file>");
+        ::std::process::exit(1);
     }
 
     // file name is the 2nd argument
@@ -39,9 +39,9 @@ fn main() {
 
     // // create brand new empty board
     // let mut svg = SVGBoard::new();
-    // let mut v = VecInt64::new();    
+    // let mut v = VecInt64::new();
 
-    // // South    
+    // // South
 
     // // draw pieces depending on set bits in the u64 value
     // let mask = 0b11111110_11111110_11111110_11111110_11111110_11111110_11111110_11111110;
@@ -61,21 +61,67 @@ fn main() {
 
     // //println!("{}", svg.get_tags());
 
-    generate_svg(8, 'R', u64::max_value(), "Moving South", "doc/images/full_board_south.svg");
-    generate_svg(8, 'L', u64::max_value(), "Moving North", "doc/images/full_board_north.svg");
-    generate_svg(1, 'R', 0b01111111_01111111_01111111_01111111_01111111_01111111_01111111_01111111, "Moving East", "doc/images/full_board_east.svg");
-    generate_svg(1, 'L', 0b11111110_11111110_11111110_11111110_11111110_11111110_11111110_11111110, "Moving West", "doc/images/full_board_west.svg");
-    generate_svg(9, 'R', 0b00000000_01111111_01111111_01111111_01111111_01111111_01111111_01111111, "Moving South East", "doc/images/full_board_south_east.svg");
-    generate_svg(7, 'R', 0b00000000_11111110_11111110_11111110_11111110_11111110_11111110_11111110, "Moving South West", "doc/images/full_board_south_west.svg");
-    generate_svg(9, 'L', 0b11111110_11111110_11111110_11111110_11111110_11111110_11111110_11111110, "Moving North West", "doc/images/full_board_north_west.svg");
-    generate_svg(7, 'L', 0b01111111_01111111_01111111_01111111_01111111_01111111_01111111_01111111, "Moving North East", "doc/images/full_board_north_east.svg");
-
+    generate_svg(
+        8,
+        'R',
+        u64::max_value(),
+        "Moving South",
+        "doc/images/full_board_south.svg",
+    );
+    generate_svg(
+        8,
+        'L',
+        u64::max_value(),
+        "Moving North",
+        "doc/images/full_board_north.svg",
+    );
+    generate_svg(
+        1,
+        'R',
+        0b01111111_01111111_01111111_01111111_01111111_01111111_01111111_01111111,
+        "Moving East",
+        "doc/images/full_board_east.svg",
+    );
+    generate_svg(
+        1,
+        'L',
+        0b11111110_11111110_11111110_11111110_11111110_11111110_11111110_11111110,
+        "Moving West",
+        "doc/images/full_board_west.svg",
+    );
+    generate_svg(
+        9,
+        'R',
+        0b00000000_01111111_01111111_01111111_01111111_01111111_01111111_01111111,
+        "Moving South East",
+        "doc/images/full_board_south_east.svg",
+    );
+    generate_svg(
+        7,
+        'R',
+        0b00000000_11111110_11111110_11111110_11111110_11111110_11111110_11111110,
+        "Moving South West",
+        "doc/images/full_board_south_west.svg",
+    );
+    generate_svg(
+        9,
+        'L',
+        0b11111110_11111110_11111110_11111110_11111110_11111110_11111110_11111110,
+        "Moving North West",
+        "doc/images/full_board_north_west.svg",
+    );
+    generate_svg(
+        7,
+        'L',
+        0b01111111_01111111_01111111_01111111_01111111_01111111_01111111_01111111,
+        "Moving North East",
+        "doc/images/full_board_north_east.svg",
+    );
 }
 
 pub fn generate_svg(shift: usize, dir: char, mask: u64, legend: &str, filename: &str) {
-
     let mut svg = SVGBoard::new();
-    let mut v = VecInt64::new();    
+    let mut v = VecInt64::new();
 
     // compute value and vecint64
     let value = match dir {
@@ -88,7 +134,7 @@ pub fn generate_svg(shift: usize, dir: char, mask: u64, legend: &str, filename: 
         'L' => v.lshift(shift).mask(mask),
         'R' => v.rshift(shift).mask(mask),
         _ => unimplemented!("Not implemented!"),
-    };    
+    };
 
     // draw pieces depending on set bits in the u64 value
     svg.draw_pieces_from_u64(value, Color::White);
@@ -101,5 +147,5 @@ pub fn generate_svg(shift: usize, dir: char, mask: u64, legend: &str, filename: 
 
     // write out file
     svg.close();
-    svg.write(filename);    
+    svg.write(filename);
 }

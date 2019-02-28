@@ -60,9 +60,9 @@ impl BitBoard {
     }
 
     /// Shift player pieces into one of the 8 possible directions
-    /// 
+    ///
     /// Examples
-    /// 
+    ///
     /// use othlib::util::from_vec::FromVec;    
     ///
     /// let full = u64::max_value();

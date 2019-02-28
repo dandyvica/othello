@@ -138,7 +138,7 @@ impl SVGBoard {
     pub fn draw_pieces_from_vecint64(&mut self, indexes: &mut VecInt64) {
         println!("{:?}", indexes);
         // loop through indexes and draw its number
-        for (i,v) in indexes.v64.iter().enumerate() {
+        for (i, v) in indexes.v64.iter().enumerate() {
             // found a non-zero index: draw the text
             if *v != -1 {
                 // calculate coordinates
@@ -184,4 +184,3 @@ impl SVGBoard {
         }
     }
 }
-

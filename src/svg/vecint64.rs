@@ -14,7 +14,7 @@ impl VecInt64 {
     /// assert!(v.v64.contains(&63));
     /// assert!(v.v64.contains(&0));
     /// assert!(!v.v64.contains(&64));
-    /// ``` 
+    /// ```
     pub fn new() -> Self {
         VecInt64 {
             v64: (0..=63).rev().collect(),
@@ -36,7 +36,7 @@ impl VecInt64 {
     /// ```     
     pub fn rshift(&mut self, n: usize) -> &mut Self {
         for _i in 1..=n {
-            self.v64.insert(0,-1);
+            self.v64.insert(0, -1);
         }
 
         self.v64.truncate(64);
