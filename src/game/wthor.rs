@@ -18,7 +18,7 @@ pub trait WThorable<T> {
 pub struct WThorFileHeader {
     file_date: u32, // 4 bytes for describing WTHOR file date
     n1: u32,        // n1 is the number of games in a WTHOR game file
-    n2: u16, // n1 is either the number of players in a players file or the number of tournements in a tournement file
+    n2: u16, // n1 is either the number of players in a players file or the number of tournaments in a tournament file
     game_year: u16,
     p1: u8, // p1 gives the board size: 0 or 8 for 8x8, 10 for 10x10 boards
     p2: u8, // N/A for game files
@@ -44,10 +44,10 @@ impl WThorFileHeader {
 // For 8x8 or 10x10 games
 #[derive(Debug)]
 pub struct WThorGame {
-    pub tournement_title_nb: u16,
-    pub black_player_nb: u16,
-    pub white_player_nb: u16,
-    pub black_pieces_nb: u8,
+    pub tournament_title_id: u16,
+    pub black_player_id: u16,
+    pub white_player_id: u16,
+    pub black_pieces_id: u8,
     pub theoretical_score: u8,
     pub moves: Vec<u8>,
 }
@@ -55,10 +55,10 @@ pub struct WThorGame {
 impl WThorable<WThorGame> for WThorGame {
     fn read_specific_data(wthor_file: &mut File) -> Self {
         WThorGame {
-            tournement_title_nb: wthor_file.read_u16::<LittleEndian>().unwrap(),
-            black_player_nb: wthor_file.read_u16::<LittleEndian>().unwrap(),
-            white_player_nb: wthor_file.read_u16::<LittleEndian>().unwrap(),
-            black_pieces_nb: wthor_file.read_u8().unwrap(),
+            tournament_title_id: wthor_file.read_u16::<LittleEndian>().unwrap(),
+            black_player_id: wthor_file.read_u16::<LittleEndian>().unwrap(),
+            white_player_id: wthor_file.read_u16::<LittleEndian>().unwrap(),
+            black_pieces_id: wthor_file.read_u8().unwrap(),
             theoretical_score: wthor_file.read_u8().unwrap(),
             moves: {
                 // 60 is the maximum number of moves (64-4)
@@ -68,6 +68,7 @@ impl WThorable<WThorGame> for WThorGame {
                 wthor_file.read_exact(&mut buffer).unwrap();
 
                 let mut moves = buffer.to_vec();
+                println!("{:?}", moves);
                 moves.retain(|&x| x != 0);
 
                 // as bytes represent row,col coordinates, the spread from 11 to 88. We can test this here
@@ -88,20 +89,20 @@ impl WThorable<WThorGame> for WThorGame {
 // A WTHOR file for the players
 #[derive(Debug)]
 pub struct WThorPlayer {
-    player: String,
+    pub player: String,
 }
 
 // remove NULL chars
+const PLAYER_LENGTH: usize = 20;
+
 impl WThorable<WThorPlayer> for WThorPlayer {
     fn read_specific_data(wthor_file: &mut File) -> Self {
         WThorPlayer {
             player: {
                 // WTHOR spec states a player name is a least 19 chars + \0
-                let mut buffer = [0; 20];
+                let mut buffer = [0; PLAYER_LENGTH];
                 wthor_file.read_exact(&mut buffer).unwrap();
-                String::from_utf8(buffer.to_vec())
-                    .unwrap()
-                    .replace("\0", "")
+                String::from_utf8_lossy(&buffer.to_vec()).replace("\0", "")
             },
         }
     }
@@ -111,7 +112,33 @@ impl WThorable<WThorPlayer> for WThorPlayer {
     }
 }
 
-// A WTHOR file is either describing games, players, tournements...
+// A WTHOR file for the tournaments
+const TOURNEMENT_LENGTH: usize = 26;
+
+#[derive(Debug)]
+pub struct WThorTournament {
+    pub tournament: String,
+}
+
+// remove NULL chars
+impl WThorable<WThorTournament> for WThorTournament {
+    fn read_specific_data(wthor_file: &mut File) -> Self {
+        WThorTournament {
+            tournament: {
+                // WTHOR spec states a player name is a least 19 chars + \0
+                let mut buffer = [0; TOURNEMENT_LENGTH];
+                wthor_file.read_exact(&mut buffer).unwrap();
+                String::from_utf8_lossy(&buffer.to_vec()).replace("\0", "")
+            },
+        }
+    }
+
+    fn get_number_of_records(n1_or_n2: (u32, u16)) -> u32 {
+        n1_or_n2.1 as u32
+    }
+}
+
+// A WTHOR file is either describing games, players, tournaments...
 #[derive(Debug)]
 pub struct WThorFile<T> {
     pub header: WThorFileHeader,

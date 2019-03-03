@@ -17,5 +17,5 @@ name = "othello2svg"
 path = "src/util/othello2svg.rs"
 
 [[bin]]
-name = "read_wthor"
-path = "src/util/read_wthor.rs"
+name = "wthor2csv"
+path = "src/util/wthor2csv.rs"
