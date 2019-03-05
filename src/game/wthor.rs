@@ -68,7 +68,6 @@ impl WThorable<WThorGame> for WThorGame {
                 wthor_file.read_exact(&mut buffer).unwrap();
 
                 let mut moves = buffer.to_vec();
-                println!("{:?}", moves);
                 moves.retain(|&x| x != 0);
 
                 // as bytes represent row,col coordinates, the spread from 11 to 88. We can test this here

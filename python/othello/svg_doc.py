@@ -1,13 +1,5 @@
 """ A minimalistic class to create SVG documents """
 class SVGDoc:
-    # define hash of SVG tags
-    # svg_tags = {
-    #     'rect'   : """<rect x="{}" y="{}" width="{}" height="{}" style="{}"/>""",
-    #     'circle' : """<circle cx="{}" cy="{}" r="{}" style="{}" />""",
-    #     'text'   : """<text x="{}" y="{}" style="{}">{}</text>""",
-    #     'text_anchor'   : """<text x="{}" y="{}" text-anchor="{}" style="{}">{}</text>""",
-    #     'line'   : """<line x1="{}" y1="{}" x2="{}" y2="{}" style="{}" />"""
-    # }
 
     """ begin SVG doc with passed canvas dimensions """
     def __init__(self, **kwargs) -> None:

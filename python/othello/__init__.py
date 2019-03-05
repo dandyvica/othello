@@ -3,3 +3,4 @@ from othello.color import Color
 from othello.coordinate import Coordinate
 from othello.svg_board import SVGBoard
 from othello.bitboard import Bitboard
+
