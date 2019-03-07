@@ -93,7 +93,7 @@ impl SVGBoard {
     /// Add bit numbers in the Othello squares. 63 is the most significant bit and therefore is at (0,0) or A1
     pub fn draw_bit_indexes(&mut self) {
         for bit in (0..=63).rev() {
-            let coord = Coordinate::to_bitboard_coordinate(bit);
+            let coord = Coordinate::to_bitboard(bit);
 
             self.svg_tags += &SVGDoc::text_with_anchor(
                 ((coord.0 as f32) + 1.5f32, (coord.1 as f32) + 1.6f32),
@@ -120,7 +120,7 @@ impl SVGBoard {
             // if bit is '1', draw a circle
             if c == '1' {
                 // calculate coordinates
-                let coord = Coordinate::to_bitboard_coordinate(63 - i);
+                let coord = Coordinate::to_bitboard(63 - i);
 
                 let style = format!("fill:{}", svg_color);
 
@@ -142,7 +142,7 @@ impl SVGBoard {
             // found a non-zero index: draw the text
             if *v != -1 {
                 // calculate coordinates
-                let coord = Coordinate::to_coordinate(i);
+                let coord = Coordinate::from_linear(i);
 
                 // but add it's bit significant
                 self.svg_tags += &SVGDoc::text_with_anchor(

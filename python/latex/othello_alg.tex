@@ -1,0 +1,90 @@
+\documentclass{article}
+
+\usepackage{minipage-marginpar}
+\usepackage{othelloboard}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{amssymb}
+\usepackage{amsmath}
+
+\begin{document}
+
+\title{Othello game algorithms}
+\author{dandyvica@gmail.com}
+
+\maketitle
+
+\begin{abstract}
+Algorithms to play Othello
+\end{abstract}
+
+\section{Introduction to Othello}
+
+\begin{othelloboard}{0.75}
+    \othelloarrayfourthrow {0}{0}{0}{2}{0}{0}{0}{0}
+%    \annotationssecondrow {} {} {} {} {} {} {} {}
+\end{othelloboard}
+
+\section{Bitboards}
+\subsection{Piece neighbours}
+
+\begin{center}
+    \begin{minipage}[c]{0.4\textwidth}
+        \begin{othelloboardnorefs}{0.75}
+            \othelloarrayfirstrow  {2}{0}{0}{0}{0}{0}{0}{0}
+            \othelloarrayfourthrow {0}{0}{0}{2}{0}{0}{0}{0}
+            \othelloarrayseventhrow {0}{0}{0}{0}{0}{0}{0}{2}
+
+            \annotationsfirstrow   {} {3} {} {} {} {} {} {}
+            \annotationssecondrow   {5} {4} {} {} {} {} {} {}
+            \annotationsthirdrow   {} {} {8} {1} {2} {} {} {}
+            \annotationsfourthrow  {} {} {7} {} {3} {} {} {}
+            \annotationsfifthrow   {} {} {6} {5} {4} {} {} {}
+            \annotationssixthrow   {} {} {} {} {} {} {8} {1}
+            \annotationsseventhrow {} {} {} {} {} {} {7} {}
+            \annotationseighthrow {} {} {} {} {} {} {6} {5}
+        \end{othelloboardnorefs}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[c]{0.5\textwidth}
+        A piece on the board could have 3, 5 or 8 neighbours depending on its position on the board.
+        Positions are shown clockwise
+    \end{minipage}
+\end{center}
+
+
+
+
+\section{Notation}
+We introduce the following notation:
+
+\begin{description}
+    \item[$bits_w$] = white pieces
+    \item[$bits_b$] = black pieces
+    \item[$bits_c$] = current player pieces
+    \item[$bits_o$] = opponent player pieces
+    \item[$full$]   = union of black \& white pieces = $bits_b \: | \: bits_w$
+    \item[$empty$]  = empty squares in the board  = $\overline{full}$
+    \item[$\overset{>>_d}{bits}$] = the neighbour of $bits$ in the direction $d$
+\end{description}
+
+\subsection{Line cap moves algorithm}
+
+\begin{algorithm}
+    \caption{Line cap moves}
+    \begin{algorithmic} 
+        \STATE $possible\_moves \gets \varnothing$ \\
+        \FOR{$d \: in \: {1,2,3,4,5,6,7,8}$}
+            \STATE $candidates \gets bits_o \cap \overset{>>_d}{bits_c} $ \COMMENT{opponent neightbours in $d$ ?}
+
+            \WHILE{$candidates != 0$}
+                \STATE $possible\_moves \: |= empty \: \& \: \overset{>>_d}{candidates}$
+                \STATE $candidates \: = bits_o \: \& \: \overset{>>_d}{candidates}$
+            \ENDWHILE
+        \ENDFOR
+    \end{algorithmic}
+\end{algorithm}
+
+
+
+\end{document}

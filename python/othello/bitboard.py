@@ -214,6 +214,35 @@ class Bitboard:
         # split into chunks
         return '\n'.join([ bits[i:i+8] for i in range(0, 64, 8) ])
 
+    """ give the possible moves as a bitboard """
+    def possible_moves(self, opponent_player: "Bitboard") -> "Bitboard":
+        # current player is ourselves
+        current_player = self
+
+        # get empty squares
+        empty_squares = ~(current_player|opponent_player)
+
+        # no possible move yet
+        possible_moves = Bitboard.zero()    
+        
+        # the algorithm is called dumb fill. It's the same for all directions. The |= line is just the union of moves each time one is found
+        # the gist of such an algorithm is the following: for a direction, follow opponent pieces till an empty square is found. It's then a possible
+        # move
+        for dir in Bitboard.directions.keys():
+            # (current_player @ dir) gives the adjacent neighbour in the direction dir
+            # and then is intersected with opponent pieces. If 0, it means the adjacent square has not opponent
+            candidates = opponent_player & (current_player @ dir)
+
+            # otherwise continue which means we found a neighbour which is an opponent          
+            while candidates != Bitboard.zero():
+                # so now if the adjacent a the opponent is empty, it's a possible move !
+                possible_moves |= empty_squares & (candidates @ dir)
+
+                # kepp on progessing on adjacent squares
+                candidates = opponent_player & (candidates @ dir)
+                
+        return possible_moves
+
 
 """ my unit tests """
 
